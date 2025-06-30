@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>BabyLink - Score</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Score Baby-Foot</h1>
+    <div>
+        <h2>Gauche : <span id="left">{{ score["GAUCHE"] }}</span></h2>
+        <h2>Droite : <span id="right">{{ score["DROITE"] }}</span></h2>
+    </div>
+    <script>
+        const socket = io();
+        socket.on('score_update', function(data) {
+            document.getElementById("left").innerText = data.GAUCHE;
+            document.getElementById("right").innerText = data.DROITE;
+        });
+    </script>
+</body>
+</html>
