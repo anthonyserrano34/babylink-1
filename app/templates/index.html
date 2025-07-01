@@ -1,29 +1,33 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BabyLink Score</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #111; color: white; text-align: center; margin: 0; padding: 2em; }
-    h1 { font-size: 4em; margin-bottom: 0.5em; }
-    .score { font-size: 8em; font-weight: bold; }
-    @media (max-width: 600px) {
-      .score { font-size: 4em; }
-    }
-  </style>
-  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const socket = io();
-      socket.on("score_update", function(data) {
-        document.getElementById("score").innerText = data.GAUCHE + " - " + data.DROITE;
-      });
-    });
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BabyLink Score</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <h1>Score BabyLink</h1>
-  <div class="score" id="score">0 - 0</div>
+    <div class="container">
+        <h1>Score BabyLink</h1>
+        <div class="score">
+            <span id="left-score">0</span>
+            <span>-</span>
+            <span id="right-score">0</span>
+        </div>
+    </div>
+    <button id="reset-button" onclick="resetScores()">Remettre à zéro</button>
+
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        socket.on('score_update', data => {
+            document.getElementById('left-score').innerText = data.left;
+            document.getElementById('right-score').innerText = data.right;
+        });
+
+        function resetScores() {
+            fetch('/reset', { method: 'POST' });
+        }
+    </script>
 </body>
 </html>

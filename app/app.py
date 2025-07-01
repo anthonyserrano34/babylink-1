@@ -24,6 +24,12 @@ def read_serial():
 def handle_connect():
     socketio.emit('score_update', score)
 
+@socketio.on('reset_score')
+def reset_score():
+    score['GAUCHE'] = 0
+    score['DROITE'] = 0
+    socketio.emit('score_update', score)
+
 if __name__ == '__main__':
     threading.Thread(target=read_serial, daemon=True).start()
     socketio.run(app, host='0.0.0.0', port=5000)
