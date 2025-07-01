@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>BabyLink - Score</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BabyLink Score</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: white; text-align: center; margin: 0; padding: 2em; }
+    h1 { font-size: 4em; margin-bottom: 0.5em; }
+    .score { font-size: 8em; font-weight: bold; }
+    @media (max-width: 600px) {
+      .score { font-size: 4em; }
+    }
+  </style>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const socket = io();
+      socket.on("score_update", function(data) {
+        document.getElementById("score").innerText = data.GAUCHE + " - " + data.DROITE;
+      });
+    });
+  </script>
 </head>
 <body>
-    <h1>Score Baby-Foot</h1>
-    <div>
-        <h2>Gauche : <span id="left">{{ score["GAUCHE"] }}</span></h2>
-        <h2>Droite : <span id="right">{{ score["DROITE"] }}</span></h2>
-    </div>
-    <script>
-        const socket = io();
-        socket.on('score_update', function(data) {
-            document.getElementById("left").innerText = data.GAUCHE;
-            document.getElementById("right").innerText = data.DROITE;
-        });
-    </script>
+  <h1>Score BabyLink</h1>
+  <div class="score" id="score">0 - 0</div>
 </body>
 </html>
