@@ -37,8 +37,14 @@
       </div>
     </div>
 
-    <p id="goal-note" class="goal-note sticky">Premier à <strong>10</strong> points&nbsp;!</p>
-    <div id="message" class="message sticky" hidden></div>
+    <p id="goal-note" class="goal-note sticky">
+      Premier à <strong>10</strong> points&nbsp;!
+    </p>
+
+    <div id="message" class="message sticky" hidden>
+      <!-- Texte “Bravo … !” -->
+      <img id="win-gif" src="/static/celebrate.gif" alt="Célébration" hidden>
+    </div>
 
     <div class="controls sticky sticky-footer">
       <button id="reset-button">Remettre à zéro</button>
@@ -67,9 +73,10 @@
     const winSound   = document.getElementById('win-sound');
     const goalNote   = document.getElementById('goal-note');
     const messageEl  = document.getElementById('message');
+    const winGif     = document.getElementById('win-gif');
     let   gameOver   = false;
 
-    // Démarrage : afficher l'overlay
+    // Affiche l'overlay de saisie au démarrage
     startBtn.addEventListener('click', () => {
       if (!leftInput.value.trim() || !rightInput.value.trim()) return;
       leftName = leftInput.value.trim();
@@ -78,7 +85,7 @@
       fetch('/reset', { method: 'POST' });
     });
 
-    // Socket.IO
+    // Réception des scores
     socket.on('score_update', data => {
       if (gameOver) return;
       leftEl.innerText  = data.left;
@@ -89,10 +96,10 @@
       }
     });
 
+    // Boutons
     resetBtn.addEventListener('click', () => {
       if (!gameOver) fetch('/reset', { method: 'POST' });
     });
-
     newGameBtn.addEventListener('click', () => {
       gameOver = false;
       nameOverlay.hidden = false;
@@ -101,16 +108,19 @@
       resetBtn.hidden   = false;
       newGameBtn.hidden = true;
       messageEl.hidden  = true;
+      winGif.hidden     = true;
     });
 
+    // Fonction de célébration
     function celebrate(winnerName) {
       winSound.play();
       confetti({ particleCount: 250, spread: 80, origin: { y: 0.4 } });
       messageEl.textContent = `Bravo ${winnerName} !`;
-      messageEl.hidden = false;
-      goalNote.hidden  = true;
-      resetBtn.hidden  = true;
-      newGameBtn.hidden= false;
+      winGif.hidden = false;
+      messageEl.appendChild(winGif);
+      goalNote.hidden   = true;
+      resetBtn.hidden   = true;
+      newGameBtn.hidden = false;
     }
   </script>
 </body>
