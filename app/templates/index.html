@@ -7,15 +7,15 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <header>
-    <h1>
-      <img src="/static/logo.png" alt="Logo" id="logo">
-      BabyLink
-    </h1>
-  </header>
+  <div class="app-container">
+    <header class="sticky">
+      <h1>
+        <img src="/static/logo.png" alt="Logo" id="logo">
+        BabyLink
+      </h1>
+    </header>
 
-  <main>
-    <div class="scoreboard">
+    <div class="scoreboard sticky">
       <div class="score-player">
         <span id="left-score">0</span>
       </div>
@@ -24,12 +24,15 @@
         <span id="right-score">0</span>
       </div>
     </div>
-    <p class="goal-note">Premier à <strong>10</strong> points !</p>
-  </main>
 
-  <div class="sticky-footer">
-    <button id="reset-button" onclick="resetScores()">Remettre à zéro</button>
-    <button id="newgame-button" onclick="newGame()" hidden>Nouvelle partie</button>
+    <p id="goal-note" class="goal-note sticky">Premier à <strong>10</strong> points&nbsp;!</p>
+
+    <div id="message" class="message sticky" hidden></div>
+
+    <div class="controls sticky sticky-footer">
+      <button id="reset-button" onclick="resetScores()">Remettre à zéro</button>
+      <button id="newgame-button" onclick="newGame()" hidden>Nouvelle partie</button>
+    </div>
   </div>
 
   <audio id="win-sound" src="/static/win.mp3" preload="auto"></audio>
@@ -43,24 +46,32 @@
     const resetBtn     = document.getElementById('reset-button');
     const newGameBtn   = document.getElementById('newgame-button');
     const winSound     = document.getElementById('win-sound');
+    const goalNote     = document.getElementById('goal-note');
+    const messageEl    = document.getElementById('message');
     let   gameOver     = false;
 
     socket.on('score_update', data => {
       if (gameOver) return;
+      // on commence : masquer goal-note
+      goalNote.hidden = false;
       leftEl.innerText  = data.left;
       rightEl.innerText = data.right;
       if (data.left >= WIN_SCORE || data.right >= WIN_SCORE) {
         gameOver = true;
-        celebrate();
+        celebrate(data.left >= WIN_SCORE ? 'Gauche' : 'Droite');
       }
     });
 
     function resetScores() {
-      if (!gameOver) fetch('/reset', { method: 'POST' });
+      if (!gameOver) {
+        fetch('/reset', { method: 'POST' });
+      }
     }
 
     function newGame() {
       gameOver = false;
+      goalNote.hidden   = false;
+      messageEl.hidden  = true;
       leftEl.innerText  = 0;
       rightEl.innerText = 0;
       resetBtn.hidden   = false;
@@ -68,9 +79,19 @@
       fetch('/reset', { method: 'POST' });
     }
 
-    function celebrate() {
+    function celebrate(winner) {
+      // Son de victoire
       winSound.play();
+
+      // Animation confetti
       confetti({ particleCount: 250, spread: 80, origin: { y: 0.4 } });
+
+      // Message Bravo
+      messageEl.innerText = `Bravo ${winner} !`;
+      messageEl.hidden = false;
+
+      // Masquer goal-note et reset, afficher nouvelle partie
+      goalNote.hidden   = true;
       resetBtn.hidden   = true;
       newGameBtn.hidden = false;
     }
