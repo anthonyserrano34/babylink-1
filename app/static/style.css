@@ -1,34 +1,64 @@
+:root {
+  --bg: #0a1b2a;
+  --text: #fff;
+  --primary: #e84335;
+  --secondary: #fdcb6e;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-    margin: 0;
-    font-family: sans-serif;
-    background: #111;
-    color: white;
-    text-align: center;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Helvetica Neue', sans-serif;
+  text-align: center;
+  padding: 1rem;
+}
+header {
+  margin-bottom: 2rem;
+}
+#logo {
+  max-width: 160px;
+  margin-bottom: 0.5rem;
+}
+h1 { font-size: 2.5rem; }
+
+.scoreboard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0 1rem;
+}
+.score-player {
+  margin: 0 1rem;
+}
+.score-player span {
+  font-size: 4rem;
+  display: block;
+}
+.separator {
+  font-size: 4rem;
+  margin: 0 0.5rem;
+}
+.goal-note {
+  font-size: 1.2rem;
+  color: var(--secondary);
+  margin-bottom: 1.5rem;
 }
 
-.container {
-    margin-top: 40px;
+.controls {
+  margin-top: 2rem;
 }
-
-.score {
-    font-size: 80px;
-    margin: 20px 0;
+button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  background: var(--primary);
+  color: var(--text);
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  margin: 0 0.5rem;
+  transition: background 0.2s;
 }
-
-#reset-button {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    font-size: 18px;
-    background-color: #ff4444;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#reset-button:hover {
-    background-color: #cc0000;
+button:hover {
+  background: var(--secondary);
 }
