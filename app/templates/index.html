@@ -8,32 +8,31 @@
 </head>
 <body>
   <header>
-    <img src="/static/logo.png" alt="BabyLink" id="logo">
-    <h1>BabyLink</h1>
+    <h1>
+      <img src="/static/logo.png" alt="Logo" id="logo">
+      BabyLink
+    </h1>
   </header>
 
   <main>
     <div class="scoreboard">
       <div class="score-player">
         <span id="left-score">0</span>
-        <p>Gauche</p>
       </div>
       <div class="separator">-</div>
       <div class="score-player">
         <span id="right-score">0</span>
-        <p>Droite</p>
       </div>
     </div>
     <p class="goal-note">Premier à <strong>10</strong> points !</p>
-
-    <div class="controls">
-      <button id="reset-button" onclick="resetScores()">Remettre à zéro</button>
-      <button id="newgame-button" onclick="newGame()" hidden>Nouvelle partie</button>
-    </div>
   </main>
 
-  <audio id="win-sound" src="/static/win.mp3" preload="auto"></audio>
+  <div class="sticky-footer">
+    <button id="reset-button" onclick="resetScores()">Remettre à zéro</button>
+    <button id="newgame-button" onclick="newGame()" hidden>Nouvelle partie</button>
+  </div>
 
+  <audio id="win-sound" src="/static/win.mp3" preload="auto"></audio>
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script>
@@ -48,13 +47,11 @@
 
     socket.on('score_update', data => {
       if (gameOver) return;
-
       leftEl.innerText  = data.left;
       rightEl.innerText = data.right;
-
       if (data.left >= WIN_SCORE || data.right >= WIN_SCORE) {
         gameOver = true;
-        celebrate(data.left >= WIN_SCORE ? 'Gauche' : 'Droite');
+        celebrate();
       }
     });
 
@@ -71,12 +68,9 @@
       fetch('/reset', { method: 'POST' });
     }
 
-    function celebrate(winner) {
-      // Son de victoire
+    function celebrate() {
       winSound.play();
-      // Confettis
       confetti({ particleCount: 250, spread: 80, origin: { y: 0.4 } });
-      // Masquer reset, afficher nouvelle partie
       resetBtn.hidden   = true;
       newGameBtn.hidden = false;
     }
