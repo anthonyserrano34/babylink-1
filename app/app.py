@@ -19,6 +19,11 @@ def read_serial():
             if line in score:
                 score[line] += 1
                 socketio.emit('score_update', score)
+            elif line == "RESET":
+                score['GAUCHE'] = 0
+                score['DROITE'] = 0
+                socketio.emit('score_update', score)
+
 
 @socketio.on('connect')
 def handle_connect():
