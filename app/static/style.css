@@ -82,12 +82,12 @@ header {
   text-align: center;
 }
 #logo {
-  height: 48px;  /* logo plus gros */
+  height: 48px;  /* logo agrandi */
   vertical-align: middle;
   margin-right: 0.5rem;
 }
 h1 {
-  font-size: 3rem;  /* titre plus gros */
+  font-size: 3rem;  /* titre agrandi */
   display: inline-flex;
   align-items: center;
 }
@@ -121,17 +121,6 @@ h1 {
   font-size: 2rem;
   color: var(--secondary);
   padding-bottom: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* GIF de célébration */
-#win-gif {
-  margin-top: 0.5rem;
-  max-width: 150px;
-  width: 100%;
-  height: auto;
 }
 
 /* Footer */
