@@ -5,6 +5,11 @@
   --secondary: #fdcb6e;
 }
 
+/* Masquer l’overlay quand hidden est présent */
+.overlay[hidden] {
+  display: none !important;
+}
+
 /* Global */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body, html { height: 100%; background: var(--bg); color: var(--text); font-family: 'Helvetica Neue', sans-serif; }
@@ -32,7 +37,7 @@ body, html { height: 100%; background: var(--bg); color: var(--text); font-famil
 }
 .overlay-content button:hover { background: var(--secondary); }
 
-/* Sticky */
+/* Sticky sections */
 .sticky { position: sticky; top:0; background:var(--bg); z-index:10; }
 
 /* Header */
