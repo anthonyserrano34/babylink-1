@@ -8,6 +8,18 @@
 </head>
 <body>
   <div class="app-container">
+
+    <!-- Écran de saisie des noms -->
+    <div id="name-overlay" class="overlay">
+      <div class="overlay-content">
+        <h2>Entrez les noms des joueurs</h2>
+        <input id="left-name-input" type="text" placeholder="Nom joueur gauche" />
+        <input id="right-name-input" type="text" placeholder="Nom joueur droite" />
+        <button id="start-button">Démarrer la partie</button>
+      </div>
+    </div>
+
+    <!-- Interface principale -->
     <header class="sticky">
       <h1>
         <img src="/static/logo.png" alt="Logo" id="logo">
@@ -26,12 +38,11 @@
     </div>
 
     <p id="goal-note" class="goal-note sticky">Premier à <strong>10</strong> points&nbsp;!</p>
-
     <div id="message" class="message sticky" hidden></div>
 
     <div class="controls sticky sticky-footer">
-      <button id="reset-button" onclick="resetScores()">Remettre à zéro</button>
-      <button id="newgame-button" onclick="newGame()" hidden>Nouvelle partie</button>
+      <button id="reset-button">Remettre à zéro</button>
+      <button id="newgame-button" hidden>Nouvelle partie</button>
     </div>
   </div>
 
@@ -39,61 +50,73 @@
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script>
-    const socket       = io();
-    const WIN_SCORE    = 10;
-    const leftEl       = document.getElementById('left-score');
-    const rightEl      = document.getElementById('right-score');
-    const resetBtn     = document.getElementById('reset-button');
-    const newGameBtn   = document.getElementById('newgame-button');
-    const winSound     = document.getElementById('win-sound');
-    const goalNote     = document.getElementById('goal-note');
-    const messageEl    = document.getElementById('message');
-    let   gameOver     = false;
+    // Variables joueurs
+    let leftName = 'Gauche', rightName = 'Droite';
+    const nameOverlay = document.getElementById('name-overlay');
+    const leftInput   = document.getElementById('left-name-input');
+    const rightInput  = document.getElementById('right-name-input');
+    const startBtn    = document.getElementById('start-button');
 
+    // Éléments du jeu
+    const socket     = io();
+    const WIN_SCORE  = 10;
+    const leftEl     = document.getElementById('left-score');
+    const rightEl    = document.getElementById('right-score');
+    const resetBtn   = document.getElementById('reset-button');
+    const newGameBtn = document.getElementById('newgame-button');
+    const winSound   = document.getElementById('win-sound');
+    const goalNote   = document.getElementById('goal-note');
+    const messageEl  = document.getElementById('message');
+    let   gameOver   = false;
+
+    // Démarrage : afficher l'overlay
+    startBtn.addEventListener('click', () => {
+      if (!leftInput.value.trim() || !rightInput.value.trim()) return;
+      leftName = leftInput.value.trim();
+      rightName = rightInput.value.trim();
+      nameOverlay.hidden = true;
+      updateLabels();
+      fetch('/reset', { method: 'POST' });
+    });
+
+    function updateLabels() {
+      // (optionnel) si tu veux afficher les noms sous le score, etc.
+      goalNote.textContent = `Première à ${WIN_SCORE} points !`;
+    }
+
+    // Socket.IO
     socket.on('score_update', data => {
       if (gameOver) return;
-      // on commence : masquer goal-note
-      goalNote.hidden = false;
       leftEl.innerText  = data.left;
       rightEl.innerText = data.right;
       if (data.left >= WIN_SCORE || data.right >= WIN_SCORE) {
         gameOver = true;
-        celebrate(data.left >= WIN_SCORE ? 'Gauche' : 'Droite');
+        celebrate(data.left >= WIN_SCORE ? leftName : rightName);
       }
     });
 
-    function resetScores() {
-      if (!gameOver) {
-        fetch('/reset', { method: 'POST' });
-      }
-    }
+    resetBtn.addEventListener('click', () => {
+      if (!gameOver) fetch('/reset', { method: 'POST' });
+    });
 
-    function newGame() {
+    newGameBtn.addEventListener('click', () => {
       gameOver = false;
-      goalNote.hidden   = false;
-      messageEl.hidden  = true;
+      nameOverlay.hidden = false;
       leftEl.innerText  = 0;
       rightEl.innerText = 0;
       resetBtn.hidden   = false;
       newGameBtn.hidden = true;
-      fetch('/reset', { method: 'POST' });
-    }
+      messageEl.hidden  = true;
+    });
 
-    function celebrate(winner) {
-      // Son de victoire
+    function celebrate(winnerName) {
       winSound.play();
-
-      // Animation confetti
       confetti({ particleCount: 250, spread: 80, origin: { y: 0.4 } });
-
-      // Message Bravo
-      messageEl.innerText = `Bravo ${winner} !`;
+      messageEl.textContent = `Bravo ${winnerName} !`;
       messageEl.hidden = false;
-
-      // Masquer goal-note et reset, afficher nouvelle partie
-      goalNote.hidden   = true;
-      resetBtn.hidden   = true;
-      newGameBtn.hidden = false;
+      goalNote.hidden  = true;
+      resetBtn.hidden  = true;
+      newGameBtn.hidden= false;
     }
   </script>
 </body>

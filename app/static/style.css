@@ -5,98 +5,70 @@
   --secondary: #fdcb6e;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-body, html {
-  height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Helvetica Neue', sans-serif;
-}
+/* Global */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body, html { height: 100%; background: var(--bg); color: var(--text); font-family: 'Helvetica Neue', sans-serif; }
+.app-container { display: flex; flex-direction: column; height: 100%; }
 
-.app-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+/* Overlay noms */
+.overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background: rgba(0,0,0,0.8);
+  display: flex; align-items: center; justify-content: center;
+  z-index:100;
 }
+.overlay-content {
+  background: #112a3a; padding:2rem; border-radius:0.5rem; text-align:center;
+}
+.overlay-content h2 { margin-bottom:1rem; font-size:1.5rem; }
+.overlay-content input {
+  width:80%; padding:0.6rem; margin:0.5rem 0; font-size:1rem;
+  border-radius:0.3rem; border:1px solid var(--secondary);
+}
+.overlay-content button {
+  margin-top:1rem; padding:0.6rem 1.2rem; font-size:1rem;
+  background: var(--primary); color:#fff; border:none; border-radius:0.3rem;
+  cursor:pointer; transition:background 0.2s;
+}
+.overlay-content button:hover { background: var(--secondary); }
 
-.sticky {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--bg);
-}
+/* Sticky */
+.sticky { position: sticky; top:0; background:var(--bg); z-index:10; }
 
-/* HEADER */
-header {
-  padding: 0.5rem;
-  text-align: center;
-}
-#logo {
-  height: 32px;
-  vertical-align: middle;
-  margin-right: 0.5rem;
-}
-h1 {
-  font-size: 2.5rem; /* plus gros titre */
-  display: inline-flex;
-  align-items: center;
-}
+/* Header */
+header { padding:0.5rem; text-align:center; }
+#logo { height:32px; vertical-align:middle; margin-right:0.5rem; }
+h1 { font-size:3rem; display:inline-flex; align-items:center; }
 
-/* SCOREBOARD */
+/* Scoreboard */
 .scoreboard {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 5rem;   /* plus gros score */
-  padding: 0.5rem 0;
+  display:flex; justify-content:center; align-items:center;
+  font-size:5rem; padding:0.5rem 0;
 }
-.score-player {
-  margin: 0 1rem;
-}
-.separator {
-  font-size: 5rem;
-}
+.score-player { margin:0 1rem; }
+.separator { font-size:5rem; }
 
-/* OBJECTIF */
+/* Goal-note */
 .goal-note {
-  text-align: center;
-  font-size: 1.2rem;
-  color: var(--secondary);
-  padding-bottom: 0.5rem;
+  text-align:center; font-size:1.2rem; color:var(--secondary);
+  padding-bottom:0.5rem;
 }
 
-/* MESSAGE DE VICTOIRE */
+/* Message */
 .message {
-  text-align: center;
-  font-size: 2rem;
-  color: var(--secondary);
-  padding-bottom: 0.5rem;
+  text-align:center; font-size:2rem; color:var(--secondary);
+  padding-bottom:0.5rem;
 }
 
-/* FOOTER */
+/* Footer */
 .sticky-footer {
-  margin-top: auto;
-  bottom: 0;
-  padding: 0.5rem 0;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
+  margin-top:auto; bottom:0; padding:0.5rem 0;
+  display:flex; justify-content:center; gap:1rem;
 }
-
 button {
-  padding: 0.6rem 1.2rem;
-  font-size: 1rem;
-  background: var(--primary);
-  color: var(--text);
-  border: none;
-  border-radius: 0.4rem;
-  cursor: pointer;
-  transition: background 0.2s;
+  padding:0.6rem 1.2rem; font-size:1rem;
+  background:var(--primary); color:var(--text);
+  border:none; border-radius:0.4rem; cursor:pointer;
+  transition:background 0.2s;
 }
-button:hover {
-  background: var(--secondary);
-}
+button:hover { background:var(--secondary); }
