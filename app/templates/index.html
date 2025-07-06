@@ -9,7 +9,7 @@
 <body>
   <div class="app-container">
 
-    <!-- Overlay démarrage -->
+    <!-- Overlay de démarrage -->
     <div id="name-overlay" class="overlay">
       <div class="overlay-content">
         <div class="overlay-header">
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <!-- Message victoire -->
+    <!-- Message de victoire -->
     <div id="message" class="message" hidden></div>
 
     <!-- Boutons de contrôle -->
@@ -51,7 +51,8 @@
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script>
-    let leftName='', rightName='';
+    // Variables et éléments
+    let leftName = '', rightName = '';
     const overlay    = document.getElementById('name-overlay');
     const leftInput  = document.getElementById('left-name-input');
     const rightInput = document.getElementById('right-name-input');
@@ -65,59 +66,74 @@
     const WIN_SCORE  = 10;
     let gameOver     = false;
 
-    // Démarrage
-    startBtn.addEventListener('click', ()=>{
-      if(!leftInput.value.trim()||!rightInput.value.trim()) return;
+    // Démarrage : saisie des noms
+    startBtn.addEventListener('click', () => {
+      if (!leftInput.value.trim() || !rightInput.value.trim()) return;
       leftName  = leftInput.value.trim();
       rightName = rightInput.value.trim();
       overlay.hidden = true;
-      fetch('/reset',{method:'POST'});
+      fetch('/reset', { method: 'POST' });
     });
 
-    // Socket.IO
+    // Socket.IO : réception des scores
     const socket = io();
-    socket.on('score_update', data=>{
-      if(gameOver) return;
+    socket.on('score_update', data => {
+      if (gameOver) return;
       const prevL = +leftEl.dataset.prev, prevR = +rightEl.dataset.prev;
       leftEl.textContent  = data.left;
       rightEl.textContent = data.right;
-      if(data.left>prevL)   pulse('left');
-      if(data.right>prevR)  pulse('right');
+      // pulse barres
+      if (data.left  > prevL) pulse('left');
+      if (data.right > prevR) pulse('right');
       leftEl.dataset.prev  = data.left;
       rightEl.dataset.prev = data.right;
-      if(data.left>=WIN_SCORE||data.right>=WIN_SCORE){
+      // victoire ?
+      if (data.left >= WIN_SCORE || data.right >= WIN_SCORE) {
         gameOver = true;
-        celebrate(data.left>=WIN_SCORE?leftName:rightName);
+        celebrate(data.left >= WIN_SCORE ? leftName : rightName);
       }
     });
 
-    function pulse(side){
-      const bar = document.querySelector('.score-bar.'+side);
+    // Animation des barres
+    function pulse(side) {
+      const bar = document.querySelector('.score-bar.' + side);
       bar.classList.add('active');
-      setTimeout(()=>bar.classList.remove('active'),300);
+      setTimeout(() => bar.classList.remove('active'), 300);
     }
 
-    resetBtn.addEventListener('click', ()=>{
-      if(!gameOver) fetch('/reset',{method:'POST'});
+    // Reset
+    resetBtn.addEventListener('click', () => {
+      if (!gameOver) fetch('/reset', { method: 'POST' });
     });
-    newGameBtn.addEventListener('click', ()=>{
+
+    // Nouvelle partie
+    newGameBtn.addEventListener('click', () => {
       gameOver = false;
       overlay.hidden = false;
+      // réafficher scoreboard & barres
+      document.querySelector('.scoreboard').hidden = false;
+      document.querySelectorAll('.score-bar').forEach(el => el.hidden = false);
       leftEl.textContent = rightEl.textContent = '0';
       leftEl.dataset.prev = rightEl.dataset.prev = '0';
       resetBtn.hidden   = false;
       newGameBtn.hidden = true;
       messageEl.hidden  = true;
-      fetch('/reset',{method:'POST'});
+      fetch('/reset', { method: 'POST' });
     });
 
-    function celebrate(winner){
+    // Célébration
+    function celebrate(winner) {
+      // masquer plateau et barres
+      document.querySelector('.scoreboard').hidden = true;
+      document.querySelectorAll('.score-bar').forEach(el => el.hidden = true);
+      // son + confettis
       winSound.play();
-      confetti({particleCount:200,spread:70,origin:{y:0.5}});
+      confetti({ particleCount: 200, spread: 70, origin: { y: 0.5 } });
+      // affiche message
       messageEl.textContent = `Bravo ${winner} ⚽🎉`;
-      messageEl.hidden = false;
-      resetBtn.hidden   = true;
-      newGameBtn.hidden = false;
+      messageEl.hidden      = false;
+      resetBtn.hidden       = true;
+      newGameBtn.hidden     = false;
     }
   </script>
 </body>
