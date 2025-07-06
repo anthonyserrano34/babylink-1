@@ -1,7 +1,7 @@
 import qrcode
 
 # URL publique ngrok
-url = "https://77d9-2a02-8440-f50d-2781-119a-5be5-eb4c-abe8.ngrok-free.app"
+url = "https://bear-enhanced-mutt.ngrok-free.app"
 
 # Génération du QR
 img = qrcode.make(url)
