@@ -12,13 +12,10 @@
     <!-- Overlay démarrage -->
     <div id="name-overlay" class="overlay">
       <div class="overlay-content">
-
-        <!-- Entête avec logo et titre -->
         <div class="overlay-header">
           <img src="/static/logo.png" id="overlay-logo" alt="BabyLink">
           <span id="overlay-title">BabyLink</span>
         </div>
-
         <h2>Entrez les noms des joueurs</h2>
         <input id="left-name-input"  type="text" placeholder="Joueur gauche" />
         <input id="right-name-input" type="text" placeholder="Joueur droite" />
@@ -47,13 +44,13 @@
       <button id="reset-button">Remettre à zéro</button>
       <button id="newgame-button" hidden>Nouvelle partie</button>
     </div>
+
   </div>
 
   <audio id="win-sound" src="/static/win.mp3" preload="auto"></audio>
   <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <script>
-    // Variables et éléments
     let leftName='', rightName='';
     const overlay    = document.getElementById('name-overlay');
     const leftInput  = document.getElementById('left-name-input');
@@ -68,44 +65,42 @@
     const WIN_SCORE  = 10;
     let gameOver     = false;
 
-    // Démarrage : saisie des noms
-    startBtn.addEventListener('click', () => {
-      if (!leftInput.value.trim() || !rightInput.value.trim()) return;
-      leftName   = leftInput.value.trim();
-      rightName  = rightInput.value.trim();
+    // Démarrage
+    startBtn.addEventListener('click', ()=>{
+      if(!leftInput.value.trim()||!rightInput.value.trim()) return;
+      leftName  = leftInput.value.trim();
+      rightName = rightInput.value.trim();
       overlay.hidden = true;
-      fetch('/reset', { method: 'POST' });
+      fetch('/reset',{method:'POST'});
     });
 
-    // Socket.IO : réception des scores
+    // Socket.IO
     const socket = io();
-    socket.on('score_update', data => {
-      if (gameOver) return;
-      const prevL = parseInt(leftEl.dataset.prev), prevR = parseInt(rightEl.dataset.prev);
+    socket.on('score_update', data=>{
+      if(gameOver) return;
+      const prevL = +leftEl.dataset.prev, prevR = +rightEl.dataset.prev;
       leftEl.textContent  = data.left;
       rightEl.textContent = data.right;
-      if (data.left > prevL)   pulse('left');
-      if (data.right > prevR)  pulse('right');
+      if(data.left>prevL)   pulse('left');
+      if(data.right>prevR)  pulse('right');
       leftEl.dataset.prev  = data.left;
       rightEl.dataset.prev = data.right;
-      if (data.left >= WIN_SCORE || data.right >= WIN_SCORE) {
+      if(data.left>=WIN_SCORE||data.right>=WIN_SCORE){
         gameOver = true;
-        celebrate(data.left >= WIN_SCORE ? leftName : rightName);
+        celebrate(data.left>=WIN_SCORE?leftName:rightName);
       }
     });
 
-    // Animation des barres
-    function pulse(side) {
-      const bar = document.querySelector('.score-bar.' + side);
+    function pulse(side){
+      const bar = document.querySelector('.score-bar.'+side);
       bar.classList.add('active');
-      setTimeout(() => bar.classList.remove('active'), 300);
+      setTimeout(()=>bar.classList.remove('active'),300);
     }
 
-    // Réinitialisation et nouvelle partie
-    resetBtn.addEventListener('click', () => {
-      if (!gameOver) fetch('/reset', { method: 'POST' });
+    resetBtn.addEventListener('click', ()=>{
+      if(!gameOver) fetch('/reset',{method:'POST'});
     });
-    newGameBtn.addEventListener('click', () => {
+    newGameBtn.addEventListener('click', ()=>{
       gameOver = false;
       overlay.hidden = false;
       leftEl.textContent = rightEl.textContent = '0';
@@ -113,17 +108,16 @@
       resetBtn.hidden   = false;
       newGameBtn.hidden = true;
       messageEl.hidden  = true;
-      fetch('/reset', { method: 'POST' });
+      fetch('/reset',{method:'POST'});
     });
 
-    // Célébration
-    function celebrate(winner) {
+    function celebrate(winner){
       winSound.play();
-      confetti({ particleCount: 200, spread: 70, origin: { y: 0.5 } });
+      confetti({particleCount:200,spread:70,origin:{y:0.5}});
       messageEl.textContent = `Bravo ${winner} ⚽🎉`;
-      messageEl.hidden     = false;
-      resetBtn.hidden      = true;
-      newGameBtn.hidden    = false;
+      messageEl.hidden = false;
+      resetBtn.hidden   = true;
+      newGameBtn.hidden = false;
     }
   </script>
 </body>
