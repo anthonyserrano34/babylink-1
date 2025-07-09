@@ -18,6 +18,9 @@ interface User {
   skillLevel?: string
   position?: string
   championship?: string
+  xp?: number
+  coins?: number
+  elo?: number
 }
 
 /**
