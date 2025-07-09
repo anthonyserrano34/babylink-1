@@ -1,7 +1,8 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useNavigation } from './AuthenticatedLayout'
 import Image from 'next/image'
 import PlayerXPIndicator from '@/components/ui/PlayerXPIndicator'
 import { 
@@ -17,24 +18,32 @@ import {
 } from 'lucide-react'
 
 /**
- * Modern sidebar component with semantic HTML and optimal responsive behavior
- * Uses CSS Grid for navigation layout and follows accessibility best practices
- * @returns {JSX.Element} Semantic sidebar with navigation and user profile
+ * Modern sidebar component with intelligent scroll handling
+ * Only shows scroll when content actually overflows the available height
+ * @returns {JSX.Element} Semantic sidebar with optimized scroll behavior
  */
 export default function Sidebar() {
   const { user, logout } = useAuth()
+  const { activePage, setActivePage } = useNavigation()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  // Refs for mobile menu handling
+  const sidebarRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
 
   if (!user) return null
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)
 
+  const handlePageChange = (pageId: string) => {
+    setActivePage(pageId)
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false)
+    }
+  }
+
   /**
    * Format user name with proper capitalization
-   * @param {string} firstName - user's first name
-   * @param {string} lastName - user's last name  
-   * @param {string} fallbackName - fallback name if firstName/lastName not available
-   * @returns {string} formatted name
    */
   const formatUserName = (firstName?: string, lastName?: string, fallbackName?: string): string => {
     if (firstName && lastName) {
@@ -46,9 +55,7 @@ export default function Sidebar() {
   }
 
   /**
-   * Get skill level display text in French without accents
-   * @param {string} skillLevel - user's skill level
-   * @returns {string} formatted skill level in French
+   * Get skill level display text in French
    */
   const getSkillLevelDisplay = (skillLevel?: string): string => {
     const skillLevels: { [key: string]: string } = {
@@ -81,17 +88,16 @@ export default function Sidebar() {
   )
 
   const navigationItems = [
-    { id: 'jouer', label: 'Jouer', icon: SoccerFieldIcon, active: true },
-    { id: 'profil', label: 'Profil', icon: User, active: false },
-    { id: 'joueurs', label: 'Joueurs', icon: Users, active: false },
-    { id: 'classement', label: 'Classement', icon: Trophy, active: false },
-    { id: 'reserver', label: 'Réserver', icon: Calendar, active: false },
-    { id: 'parier', label: 'Parier', icon: DollarSign, active: false },
+    { id: 'jouer', label: 'Jouer', icon: SoccerFieldIcon },
+    { id: 'profil', label: 'Profil', icon: User },
+    { id: 'joueurs', label: 'Joueurs', icon: Users },
+    { id: 'classement', label: 'Classement', icon: Trophy },
+    { id: 'reserver', label: 'Réserver', icon: Calendar },
+    { id: 'parier', label: 'Parier', icon: DollarSign },
   ]
 
   return (
     <>
-      
       {/* Mobile Menu Toggle Button */}
       <button
         onClick={toggleMobileMenu}
@@ -110,19 +116,22 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Sidebar Container */}
-      <div className={`
-        bg-[#0C0E14] h-full flex flex-col
-        lg:relative lg:translate-x-0
-        max-lg:fixed max-lg:inset-y-0 max-lg:left-0 max-lg:w-80 max-lg:z-50 max-lg:overflow-y-auto
-        max-lg:transform max-lg:transition-transform max-lg:duration-300
-        ${isMobileMenuOpen ? 'max-lg:translate-x-0' : 'max-lg:-translate-x-full'}
-      `}>
+      {/* Sidebar Container - Fixed structure with footer always at bottom */}
+      <div 
+        ref={sidebarRef}
+        className={`
+          bg-[#0C0E14] h-full
+          lg:relative lg:translate-x-0
+          max-lg:fixed max-lg:inset-y-0 max-lg:left-0 max-lg:w-80 max-lg:z-50
+          max-lg:transform max-lg:transition-transform max-lg:duration-300
+          ${isMobileMenuOpen ? 'max-lg:translate-x-0' : 'max-lg:-translate-x-full'}
+          grid grid-rows-[auto_1fr_auto]
+        `}
+      >
         
-        {/* Header Section */}
-        <header className="flex-shrink-0 px-6 pt-6 pb-4">
+        {/* Header Section - Fixed at top */}
+        <header className="px-6 pt-6 pb-4">
           <div className="flex items-center justify-between">
-            {/* Logo and Brand - Centered on desktop */}
             <div className="flex items-center gap-3 lg:mx-auto">
               <Image 
                 src="/assets/logo.png" 
@@ -137,7 +146,6 @@ export default function Sidebar() {
               </h1>
             </div>
             
-            {/* Mobile Close Button */}
             <button
               onClick={toggleMobileMenu}
               className="lg:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
@@ -148,131 +156,134 @@ export default function Sidebar() {
           </div>
         </header>
 
-        {/* User Profile Section */}
-        <section className="flex-shrink-0 px-6 pb-6">
-          <div className="flex flex-col items-center">
-            {/* Avatar with XP Indicator */}
-            <PlayerXPIndicator
-              xpLevel={2}
-              avatarSrc={user.avatar}
-              userName={formatUserName(user.firstName, user.lastName, user.name)}
-            />
-
-            {/* Skill Level */}
-            <p className="text-[#666666] text-xs uppercase tracking-wide mt-3">
-              {getSkillLevelDisplay(user.skillLevel)}
-            </p>
-
-            {/* User Name */}
-            <h2 className="text-white font-nubernext-extended-heavy text-lg text-center mt-2">
-              {formatUserName(user.firstName, user.lastName, user.name)}
-            </h2>
-
-            {/* XP Display */}
-            <p className="text-[#EA1846] font-nubernext-extended-heavy text-sm mt-2">
-              XP: {user.xp || 1250}
-            </p>
-
-            {/* Location */}
-            <div className="flex items-center gap-2 mt-3">
-              <MapPin className="w-4 h-4 text-[#888888]" />
-              <span className="text-[#AAAAAA] text-sm">EPSI Montpellier</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Stats Section */}
-        <section className="flex-shrink-0 px-6 pb-8">
-          <div className="flex justify-center gap-10">
-            {/* Coins */}
-            <div className="flex flex-col items-center space-y-2">
-              <Image 
-                src="/assets/coin.png" 
-                alt="Coins" 
-                width={24}
-                height={24}
-                className="w-6 h-6"
+        {/* Main Scrollable Content - Takes remaining space */}
+        <div 
+          ref={contentRef}
+          className="overflow-y-auto scrollbar-hide px-6"
+        >
+          
+          {/* User Profile Section */}
+          <section className="pb-6">
+            <div className="flex flex-col items-center">
+              <PlayerXPIndicator
+                xpLevel={2}
+                avatarSrc={user.avatar}
+                userName={formatUserName(user.firstName, user.lastName, user.name)}
               />
-              <div className="text-center">
-                <div className="text-white font-nubernext-extended-heavy text-lg">
-                  {user.coins || 850}
-                </div>
-                <div className="text-[#888888] text-xs">Coins</div>
+
+              <p className="text-[#666666] text-xs uppercase tracking-wide mt-3">
+                {getSkillLevelDisplay(user.skillLevel)}
+              </p>
+
+              <h2 className="text-white font-nubernext-extended-heavy text-lg text-center mt-2">
+                {formatUserName(user.firstName, user.lastName, user.name)}
+              </h2>
+
+              <p className="text-[#EA1846] font-nubernext-extended-heavy text-sm mt-2">
+                XP: {user.xp || 1250}
+              </p>
+
+              <div className="flex items-center gap-2 mt-3">
+                <MapPin className="w-4 h-4 text-[#888888]" />
+                <span className="text-[#AAAAAA] text-sm">EPSI Montpellier</span>
               </div>
             </div>
-            
-            {/* ELO */}
-            <div className="flex flex-col items-center space-y-2">
-              <Image 
-                src="/assets/trophy.png" 
-                alt="ELO Rating" 
-                width={24}
-                height={24}
-                className="w-6 h-6"
-              />
-              <div className="text-center">
-                <div className="text-white font-nubernext-extended-heavy text-lg">
-                  {user.elo || 1340}
+          </section>
+
+          {/* Stats Section */}
+          <section className="pb-8">
+            <div className="flex justify-center gap-10">
+              <div className="flex flex-col items-center space-y-2">
+                <Image 
+                  src="/assets/coin.png" 
+                  alt="Coins" 
+                  width={24}
+                  height={24}
+                  className="w-6 h-6"
+                />
+                <div className="text-center">
+                  <div className="text-white font-nubernext-extended-heavy text-lg">
+                    {user.coins || 850}
+                  </div>
+                  <div className="text-[#888888] text-xs">Coins</div>
                 </div>
-                <div className="text-[#888888] text-xs">ELO</div>
+              </div>
+              
+              <div className="flex flex-col items-center space-y-2">
+                <Image 
+                  src="/assets/trophy.png" 
+                  alt="ELO Rating" 
+                  width={24}
+                  height={24}
+                  className="w-6 h-6"
+                />
+                <div className="text-center">
+                  <div className="text-white font-nubernext-extended-heavy text-lg">
+                    {user.elo || 1340}
+                  </div>
+                  <div className="text-[#888888] text-xs">ELO</div>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Navigation Section */}
-        <nav className="flex-1 px-6 pb-6">
-          <div className="grid grid-cols-2 gap-4">
-            {navigationItems.map((item) => {
-              const IconComponent = item.icon
-              return (
-                <button
-                  key={item.id}
-                  className={`
-                    h-28 w-full flex flex-col items-center justify-center gap-3 
-                    transition-all duration-200 hover:bg-[#EA1846] group
-                    ${item.active 
-                      ? 'bg-[#EA1846]' 
-                      : 'bg-[#101118] hover:bg-[#EA1846]'
-                    }
-                  `}
-                  aria-label={`Navigate to ${item.label}`}
-                >
-                  <IconComponent 
-                    className={`w-6 h-6 transition-colors ${
-                      item.active 
-                        ? 'text-white' 
-                        : 'text-[#888888] group-hover:text-white'
-                    }`} 
-                  />
-                  <span 
-                    className={`font-nubernext-bold text-sm transition-colors ${
-                      item.active 
-                        ? 'text-white' 
-                        : 'text-[#888888] group-hover:text-white'
-                    }`}
+          {/* Navigation Section - With adequate bottom spacing */}
+          <nav className="pb-8 mb-4">
+            <div className="grid grid-cols-2 gap-4">
+              {navigationItems.map((item) => {
+                const IconComponent = item.icon
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handlePageChange(item.id)}
+                    className={`
+                      h-28 w-full flex flex-col items-center justify-center gap-3 
+                      transition-all duration-200 hover:bg-[#EA1846] group cursor-pointer
+                      ${activePage === item.id 
+                        ? 'bg-[#EA1846]' 
+                        : 'bg-[#101118] hover:bg-[#EA1846]'
+                      }
+                    `}
+                    aria-label={`Navigate to ${item.label}`}
                   >
-                    {item.label}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </nav>
+                    <IconComponent 
+                      className={`w-6 h-6 transition-colors ${
+                        activePage === item.id 
+                          ? 'text-white' 
+                          : 'text-[#888888] group-hover:text-white'
+                      }`} 
+                    />
+                    <span 
+                      className={`font-nubernext-extended-bold text-sm transition-colors ${
+                        activePage === item.id 
+                          ? 'text-white' 
+                          : 'text-[#888888] group-hover:text-white'
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </nav>
 
-        {/* Footer with Logout */}
-        <footer className="flex-shrink-0 px-6 pb-6">
+        </div>
+
+        {/* Footer with Logout - ALWAYS fixed at bottom */}
+        <footer className="px-6 pb-6 border-t border-[#1a1a1a] pt-6 mt-2">
           <button
             onClick={logout}
-            className="w-full flex items-center justify-center gap-3 text-[#888888] hover:text-[#EA1846] transition-colors duration-200 py-4 group"
+            className="w-full flex items-center justify-center gap-2 text-[#888888] hover:text-[#EA1846] transition-colors duration-200 py-3 group text-sm"
             aria-label="Logout from account"
           >
-            <LogOut className="w-5 h-5 group-hover:text-[#EA1846] transition-colors" />
+            <LogOut className="w-4 h-4 group-hover:text-[#EA1846] transition-colors" />
             <span className="font-medium group-hover:text-[#EA1846] transition-colors">
               Déconnexion
             </span>
           </button>
         </footer>
+
       </div>
     </>
   )

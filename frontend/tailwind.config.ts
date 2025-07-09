@@ -8,12 +8,13 @@ const config = {
   theme: {
     extend: {
       fontFamily: {
-        'nubernext': ['NuberNext', 'IBM Plex Sans', 'sans-serif'],
-        'nubernext-extended': ['NuberNext Extended', 'NuberNext', 'IBM Plex Sans', 'sans-serif'],
-        'nubernext-wide': ['NuberNext Wide', 'NuberNext', 'IBM Plex Sans', 'sans-serif'],
-        'nubernext-condensed': ['NuberNext Condensed', 'NuberNext', 'IBM Plex Sans', 'sans-serif'],
-        'monument': ['Monument Extended Regular', 'Inter', 'sans-serif'],
-        'sharp-sans': ['Sharp Sans Extrabold', 'IBM Plex Sans', 'sans-serif'],
+        'sans': ['var(--font-ibm-plex-sans)', 'system-ui', 'sans-serif'],
+        'nubernext': ['var(--font-nubernext)', 'var(--font-ibm-plex-sans)', 'sans-serif'],
+        'nubernext-extended': ['var(--font-nubernext)', 'var(--font-ibm-plex-sans)', 'sans-serif'],
+        'nubernext-wide': ['var(--font-nubernext)', 'var(--font-ibm-plex-sans)', 'sans-serif'],
+        'nubernext-condensed': ['var(--font-nubernext)', 'var(--font-ibm-plex-sans)', 'sans-serif'],
+        'monument': ['var(--font-monument)', 'var(--font-ibm-plex-sans)', 'sans-serif'],
+        'sharp-sans': ['Sharp Sans Extrabold', 'var(--font-ibm-plex-sans)', 'sans-serif'],
       },
       fontWeight: {
         'heavy': '900',

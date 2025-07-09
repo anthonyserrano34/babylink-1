@@ -1,89 +1,157 @@
+/**
+ * @file Page d'accueil principale de l'application BabyLink
+ * @author BabyLink Team  
+ * @created 2025-01-09
+ * 
+ * Point d'entrée principal de l'application avec gestion de l'authentification
+ * et navigation entre les différentes sections avec animations fluides
+ */
+
 "use client"
 
-import AuthenticatedLayout from '@/components/layout/AuthenticatedLayout'
 import { useAuth } from '@/contexts/AuthContext'
+import AuthenticatedLayout, { useNavigation } from '@/components/layout/AuthenticatedLayout'
+import JouerPage from '@/components/pages/JouerPage'
+import ProfilPage from '@/components/pages/ProfilPage'
+import { useState, useEffect } from 'react'
 
 /**
- * Main dashboard page for authenticated users
- * @returns {JSX.Element} Dashboard content
+ * Composant principal de contenu avec navigation dynamique et animations
+ * @returns {JSX.Element} Page correspondant à la navigation active avec transitions
  */
-export default function Home() {
-  const { user } = useAuth()
+function MainContent() {
+  const { activePage } = useNavigation()
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [displayedPage, setDisplayedPage] = useState(activePage)
+
+  useEffect(() => {
+    if (activePage !== displayedPage) {
+      setIsTransitioning(true)
+      setTimeout(() => {
+        setDisplayedPage(activePage)
+        setTimeout(() => setIsTransitioning(false), 50)
+      }, 250)
+    }
+  }, [activePage, displayedPage])
+
+  const renderPage = () => {
+    switch (displayedPage) {
+      case 'jouer':
+        return <JouerPage />
+      case 'profil':
+        return <ProfilPage />
+      case 'joueurs':
+        return (
+          <div className="h-full p-6 flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-3xl font-nubernext-extended-heavy text-white mb-4">
+                Liste des Joueurs
+              </h1>
+              <p className="text-[#AAAAAA] text-lg">
+                Page en cours de développement...
+              </p>
+            </div>
+          </div>
+        )
+      case 'classement':
+        return (
+          <div className="h-full p-6 flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-3xl font-nubernext-extended-heavy text-white mb-4">
+                Classement
+              </h1>
+              <p className="text-[#AAAAAA] text-lg">
+                Page en cours de développement...
+              </p>
+            </div>
+          </div>
+        )
+      case 'reserver':
+        return (
+          <div className="h-full p-6 flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-3xl font-nubernext-extended-heavy text-white mb-4">
+                Réservation
+              </h1>
+              <p className="text-[#AAAAAA] text-lg">
+                Page en cours de développement...
+              </p>
+            </div>
+          </div>
+        )
+      case 'parier':
+        return (
+          <div className="h-full p-6 flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-3xl font-nubernext-extended-heavy text-white mb-4">
+                Paris
+              </h1>
+              <p className="text-[#AAAAAA] text-lg">
+                Page en cours de développement...
+              </p>
+            </div>
+          </div>
+        )
+      default:
+        return <JouerPage />
+    }
+  }
+
+  return (
+    <div className={`
+      h-full transition-all duration-500 ease-in-out transform
+      ${isTransitioning 
+        ? 'opacity-0 translate-x-4 scale-[0.98]' 
+        : 'opacity-100 translate-x-0 scale-100'
+      }
+    `}>
+      {renderPage()}
+    </div>
+  )
+}
+
+/**
+ * Page d'accueil principale avec gestion d'authentification
+ * @returns {JSX.Element} Interface complète de l'application
+ */
+export default function HomePage() {
+  const { isAuthenticated, isLoading } = useAuth()
+
+  if (isLoading) {
+    return (
+      <div className="h-screen bg-[#0C0E14] flex items-center justify-center">
+        <div className="text-white font-nubernext-extended-heavy text-xl animate-pulse">
+          Chargement de BabyLink...
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="h-screen bg-[#0C0E14] flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <h1 className="text-4xl font-nubernext-extended-heavy text-white mb-4">
+            <span className="text-white">Baby</span>
+            <span className="text-[#EA1846]">Link</span>
+          </h1>
+          <p className="text-[#AAAAAA] text-lg mb-8">
+            Connectez-vous pour accéder à la plateforme
+          </p>
+          <button 
+            className="bg-[#EA1846] text-white px-8 py-3 rounded-lg font-nubernext-extended-bold hover:bg-[#d41539] transition-all duration-300 hover:scale-105"
+            onClick={() => window.location.href = '/login'}
+          >
+            Se Connecter
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <AuthenticatedLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Welcome Header */}
-        <div className="mb-8">
-          <h1 className="text-white text-2xl sm:text-3xl font-bold mb-2">
-            Bienvenue, {user?.name} ! 🎯
-          </h1>
-          <p className="text-[#888888] text-base sm:text-lg">
-            Prêt pour votre prochaine partie de babyfoot ?
-          </p>
-        </div>
-
-        {/* Quick Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
-          <div className="bg-[#1a1a1a] rounded-lg p-4 sm:p-6 border border-[#333]">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[#888888] text-sm">Score Total</p>
-                <p className="text-white text-xl sm:text-2xl font-bold">{user?.score || 0}</p>
-              </div>
-              <div className="text-[#EA1846] text-2xl sm:text-3xl">🏆</div>
-            </div>
-          </div>
-
-          <div className="bg-[#1a1a1a] rounded-lg p-4 sm:p-6 border border-[#333]">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[#888888] text-sm">Position</p>
-                <p className="text-white text-xl sm:text-2xl font-bold">{user?.position || 'Attaquant'}</p>
-              </div>
-              <div className="text-[#EA1846] text-2xl sm:text-3xl">⚽</div>
-            </div>
-          </div>
-
-          <div className="bg-[#1a1a1a] rounded-lg p-4 sm:p-6 border border-[#333]">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[#888888] text-sm">Niveau</p>
-                <p className="text-white text-xl sm:text-2xl font-bold">{user?.skillLevel || 'Débutant'}</p>
-              </div>
-              <div className="text-[#EA1846] text-2xl sm:text-3xl">📈</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-[#1a1a1a] rounded-lg p-4 sm:p-6 border border-[#333]">
-          <h2 className="text-white text-lg sm:text-xl font-bold mb-4">Activité Récente</h2>
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-[#222] rounded-lg">
-              <div className="text-2xl">🎮</div>
-              <div className="flex-1">
-                <p className="text-white font-medium">Partie en cours</p>
-                <p className="text-[#888888] text-sm">Aucune partie active</p>
-              </div>
-              <button className="bg-[#EA1846] hover:bg-[#c71635] text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto">
-                Nouvelle Partie
-              </button>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-[#222] rounded-lg">
-              <div className="text-2xl">🏅</div>
-              <div className="flex-1">
-                <p className="text-white font-medium">Tournoi EPSI</p>
-                <p className="text-[#888888] text-sm">Inscription ouverte</p>
-              </div>
-              <button className="border border-[#EA1846] text-[#EA1846] hover:bg-[#EA1846] hover:text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto">
-                S&apos;inscrire
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <MainContent />
     </AuthenticatedLayout>
   )
 }

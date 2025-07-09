@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -16,9 +15,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-monument: "Monument Extended Regular", "Inter", var(--font-geist-sans);
+  --font-sans: var(--font-ibm-plex-sans);
+  --font-mono: ui-monospace, monospace;
+  --font-monument: var(--font-monument);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -129,7 +128,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: var(--font-ibm-plex-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   }
 }
 
@@ -144,60 +143,67 @@
 }
 
 /**
- * NuberNext font family - Modern and clean for BabyLink interface
- * Using Heavy weight as primary choice with fallbacks
+ * Font variables managed by next/font in layout.tsx
+ * - IBM Plex Sans: optimized via next/font/google
+ * - NuberNext: optimized via next/font/local
+ * - Monument: optimized via next/font/local
  */
 
-/* NuberNext Heavy - Primary choice for headings and emphasis */
-@font-face {
-  font-family: 'NuberNext';
-  src: url('/fonts/NuberNext-Heavy-BF63c8a0fb5d005.otf') format('opentype');
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
+/**
+ * Custom scrollbar styles for sidebar - hides scrollbar while keeping functionality
+ */
+.sidebar-scroll {
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-@font-face {
-  font-family: 'NuberNext';
-  src: url('/fonts/NuberNext-HeavyItalic-BF63c8a0b20b96f.otf') format('opentype');
-  font-weight: 900;
-  font-style: italic;
-  font-display: swap;
+.sidebar-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
-/* NuberNext Bold - Secondary weight */
-@font-face {
-  font-family: 'NuberNext';
-  src: url('/fonts/NuberNext-Bold-BF63c8a0b20c2e1.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+/**
+ * Universal scrollbar hiding utility - completely invisible scrollbars
+ */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-@font-face {
-  font-family: 'NuberNext';
-  src: url('/fonts/NuberNext-BoldItalic-BF63c8a09c494f7.otf') format('opentype');
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
-/* NuberNext DemiBold */
-@font-face {
-  font-family: 'NuberNext';
-  src: url('/fonts/NuberNext-DemiBold-BF63c8a0fa51bc8.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
+/**
+ * Only show scroll when content actually overflows
+ */
+.sidebar-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-/* NuberNext Regular */
-@font-face {
-  font-family: 'NuberNext';
-  src: url('/fonts/NuberNext-Regular-BF63c8a0fb4a7c5.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+/**
+ * Conditional scroll behavior - only when needed
+ */
+.sidebar-content {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/**
+ * Navigation section that can shrink when space is limited
+ */
+.navigation-scrollable {
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.navigation-scrollable::-webkit-scrollbar {
+  display: none;
 }
 
 @font-face {
@@ -301,4 +307,50 @@
 
 .font-nubernext-extended {
   font-family: 'NuberNext Extended', 'NuberNext', 'IBM Plex Sans', sans-serif !important;
+}
+
+/* Custom animations for page transitions and UI interactions */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.4s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
 }
