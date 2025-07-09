@@ -49,7 +49,8 @@ const eslintConfig = [
       "**/build/**",
       "**/.next/**",
       "**/generated/**",
-      "**/*.generated.*"
+      "**/*.generated.*",
+      "**/scripts/**"
     ]
   }
 ];

@@ -10,3 +10,25 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String   // SHA256 hash
+  score     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Future fields for complete profile
+  firstName    String?
+  lastName     String?
+  avatar       String?
+  jerseyNumber Int?
+  skillLevel   String?
+  position     String?
+  championship String?
+  xp           Int?
+  coins        Int?
+  elo          Int?
+}

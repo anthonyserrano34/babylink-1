@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export-db": "node scripts/export-schema.js",
+    "setup-db": "npx prisma generate && npx prisma db push && npx prisma db seed"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

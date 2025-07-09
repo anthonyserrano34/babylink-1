@@ -116,23 +116,23 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Sidebar Container - Fixed structure with footer always at bottom */}
+      {/* Sidebar Container - Proper flex structure for scrolling */}
       <div 
         ref={sidebarRef}
         className={`
-          bg-[#0C0E14] h-full
+          bg-[#0C0E14] h-full flex flex-col
           lg:relative lg:translate-x-0
           max-lg:fixed max-lg:inset-y-0 max-lg:left-0 max-lg:w-80 max-lg:z-50
           max-lg:transform max-lg:transition-transform max-lg:duration-300
           ${isMobileMenuOpen ? 'max-lg:translate-x-0' : 'max-lg:-translate-x-full'}
-          grid grid-rows-[auto_1fr_auto]
         `}
       >
         
         {/* Header Section - Fixed at top */}
-        <header className="px-6 pt-6 pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 lg:mx-auto">
+        <header className="flex-shrink-0 px-6 pt-6 pb-4">
+          <div className="flex items-center justify-center">
+            {/* Logo - Centered everywhere */}
+            <div className="flex items-center gap-3">
               <Image 
                 src="/assets/logo.png" 
                 alt="BabyLink Logo" 
@@ -146,24 +146,19 @@ export default function Sidebar() {
               </h1>
             </div>
             
-            <button
-              onClick={toggleMobileMenu}
-              className="lg:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
-              aria-label="Close navigation menu"
-            >
-              <X size={24} />
-            </button>
+            {/* Close button - Hidden on mobile as requested */}
+            {/* Supprimé : il y a déjà une croix qui remplace le menu hamburger */}
           </div>
         </header>
 
-        {/* Main Scrollable Content - Takes remaining space */}
+        {/* Scrollable Content Area - Takes remaining space */}
         <div 
           ref={contentRef}
-          className="overflow-y-auto scrollbar-hide px-6"
+          className="flex-1 overflow-y-auto scrollbar-hide px-6 pb-6 min-h-0"
         >
           
           {/* User Profile Section */}
-          <section className="pb-6">
+          <section className="pb-4">
             <div className="flex flex-col items-center">
               <PlayerXPIndicator
                 xpLevel={2}
@@ -171,27 +166,27 @@ export default function Sidebar() {
                 userName={formatUserName(user.firstName, user.lastName, user.name)}
               />
 
-              <p className="text-[#666666] text-xs uppercase tracking-wide mt-3">
+              <p className="text-[#666666] text-xs uppercase tracking-wide mt-2">
                 {getSkillLevelDisplay(user.skillLevel)}
               </p>
 
-              <h2 className="text-white font-nubernext-extended-heavy text-lg text-center mt-2">
+              <h2 className="text-white font-nubernext-extended-heavy text-lg text-center mt-1">
                 {formatUserName(user.firstName, user.lastName, user.name)}
               </h2>
 
-              <p className="text-[#EA1846] font-nubernext-extended-heavy text-sm mt-2">
+              <p className="text-[#EA1846] font-nubernext-extended-heavy text-sm mt-1">
                 XP: {user.xp || 1250}
               </p>
 
-              <div className="flex items-center gap-2 mt-3">
+              <div className="flex items-center gap-2 mt-2">
                 <MapPin className="w-4 h-4 text-[#888888]" />
                 <span className="text-[#AAAAAA] text-sm">EPSI Montpellier</span>
               </div>
             </div>
           </section>
 
-          {/* Stats Section */}
-          <section className="pb-8">
+          {/* Stats Section - More space from EPSI Montpellier */}
+          <section className="pb-6 pt-4">
             <div className="flex justify-center gap-10">
               <div className="flex flex-col items-center space-y-2">
                 <Image 
@@ -227,8 +222,8 @@ export default function Sidebar() {
             </div>
           </section>
 
-          {/* Navigation Section - With adequate bottom spacing */}
-          <nav className="pb-8 mb-4">
+          {/* Navigation Section */}
+          <nav className="pb-4">
             <div className="grid grid-cols-2 gap-4">
               {navigationItems.map((item) => {
                 const IconComponent = item.icon
@@ -254,7 +249,7 @@ export default function Sidebar() {
                       }`} 
                     />
                     <span 
-                      className={`font-nubernext-extended-bold text-sm transition-colors ${
+                      className={`font-nubernext-extended-heavy text-sm transition-colors ${
                         activePage === item.id 
                           ? 'text-white' 
                           : 'text-[#888888] group-hover:text-white'
@@ -268,21 +263,21 @@ export default function Sidebar() {
             </div>
           </nav>
 
-        </div>
+          {/* Logout Button - More space for desktop visibility */}
+          <div className="pt-4 pb-2">
+            <button
+              onClick={logout}
+              className="w-full flex items-center justify-center gap-2 text-[#888888] hover:text-[#EA1846] transition-colors duration-200 py-2 group text-sm"
+              aria-label="Logout from account"
+            >
+              <LogOut className="w-4 h-4 group-hover:text-[#EA1846] transition-colors" />
+              <span className="font-medium group-hover:text-[#EA1846] transition-colors">
+                Déconnexion
+              </span>
+            </button>
+          </div>
 
-        {/* Footer with Logout - ALWAYS fixed at bottom */}
-        <footer className="px-6 pb-6 border-t border-[#1a1a1a] pt-6 mt-2">
-          <button
-            onClick={logout}
-            className="w-full flex items-center justify-center gap-2 text-[#888888] hover:text-[#EA1846] transition-colors duration-200 py-3 group text-sm"
-            aria-label="Logout from account"
-          >
-            <LogOut className="w-4 h-4 group-hover:text-[#EA1846] transition-colors" />
-            <span className="font-medium group-hover:text-[#EA1846] transition-colors">
-              Déconnexion
-            </span>
-          </button>
-        </footer>
+        </div>
 
       </div>
     </>
