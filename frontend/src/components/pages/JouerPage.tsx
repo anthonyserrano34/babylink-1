@@ -575,7 +575,7 @@ export default function JouerPage() {
             {/* Titre et progression */}
             <div className="text-center mb-8">
               <h1 className="text-3xl font-nubernext-extended-heavy text-white mb-4">
-                Creation d'une partie
+                Creation d&apos;une partie
               </h1>
               <div className="flex justify-center space-x-2 mb-4">
                 {Array.from({ length: totalSteps }, (_, i) => (
