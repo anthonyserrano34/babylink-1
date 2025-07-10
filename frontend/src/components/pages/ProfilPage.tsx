@@ -11,6 +11,53 @@
 import React from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import PlayerXPIndicator from '@/components/ui/PlayerXPIndicator'
+import BabyFootPosition, { POSITIONS } from '@/components/babyfoot_component/BabyFootPosition'
+import { Button } from '@/components/ui/button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
+/**
+ * Jersey component that lets users view their number
+ * @param {string} number - current jersey number
+ * @returns {JSX.Element} - jersey display
+ */
+const JerseyDisplay = ({ number }: { number: string }) => {
+  return (
+    <div className="flex justify-center items-center">
+      <div className="relative flex justify-center items-center">
+        <div
+          className="relative flex justify-center items-center"
+          style={{
+            backgroundImage: 'url("/assets/shirt-back.png")',
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "50% 50%",
+            backgroundSize: "contain",
+            width: "200px",
+            height: "150px",
+            minHeight: "150px",
+          }}
+        >
+          <div
+            className="absolute text-center bg-transparent text-gray-200 font-medium jersey-number"
+            style={{
+              fontSize: "40px",
+              lineHeight: "40px",
+              fontWeight: "500",
+              paddingBottom: "20px",
+              textShadow: "none",
+              width: "80px",
+              height: "60px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {number || "00"}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 /**
  * Page de profil utilisateur
@@ -38,7 +85,7 @@ export default function ProfilPage() {
           {/* Profile Card */}
           <div className="lg:col-span-1">
             <div className="bg-[#101118] rounded-xl p-6">
-              <div className="text-center">
+              <div className="text-center flex flex-col items-center">
                 <PlayerXPIndicator
                   xpLevel={2}
                   avatarSrc={user.avatar}
@@ -60,7 +107,7 @@ export default function ProfilPage() {
             </div>
           </div>
 
-          {/* Statistics */}
+          {/* Statistics & Preferences */}
           <div className="lg:col-span-2 space-y-6">
             {/* Stats Overview */}
             <div className="bg-[#101118] rounded-xl p-6">
@@ -70,52 +117,62 @@ export default function ProfilPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-nubernext-extended-bold text-[#EA1846] mb-1">
-                    47
+                    {user.score || 0}
                   </div>
-                  <div className="text-sm text-[#AAAAAA]">Victoires</div>
+                  <div className="text-sm text-[#AAAAAA]">Score</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-nubernext-extended-bold text-[#EA1846] mb-1">
-                    23
+                    {user.xp || 1250}
                   </div>
-                  <div className="text-sm text-[#AAAAAA]">Défaites</div>
+                  <div className="text-sm text-[#AAAAAA]">Expérience</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-nubernext-extended-bold text-[#EA1846] mb-1">
-                    67%
+                    {user.coins || 0}
                   </div>
-                  <div className="text-sm text-[#AAAAAA]">Winrate</div>
+                  <div className="text-sm text-[#AAAAAA]">Coins</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-nubernext-extended-bold text-[#EA1846] mb-1">
-                    {user.elo || 1340}
+                    {user.elo || 1000}
                   </div>
                   <div className="text-sm text-[#AAAAAA]">ELO</div>
                 </div>
               </div>
             </div>
 
-            {/* Recent Matches */}
+            {/* Player Preferences */}
             <div className="bg-[#101118] rounded-xl p-6">
-              <h3 className="text-xl font-nubernext-extended-bold text-white mb-4">
-                Dernières Parties
+              <h3 className="text-xl font-nubernext-extended-bold text-white mb-6">
+                Préférences de Jeu
               </h3>
-              <div className="space-y-3">
-                {[1, 2, 3].map((match) => (
-                  <div key={match} className="bg-[#0C0E14] rounded-lg p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <div>
-                        <div className="text-white font-medium">vs. Player{match}</div>
-                                                                          <div className="text-[#AAAAAA] text-sm">Il y a {match} jour{match > 1 ? "s" : ""}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-green-500 font-nubernext-extended-bold">Victoire</div>
-                      <div className="text-[#AAAAAA] text-sm">10 - {8 - match}</div>
-                    </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                {/* Jersey Number */}
+                <div className="text-center">
+                  <h4 className="text-lg font-nubernext-extended-bold text-white mb-4">
+                    Numéro de Maillot
+                  </h4>
+                  <JerseyDisplay number={user.jerseyNumber?.toString() || "00"} />
+                  <p className="text-[#AAAAAA] text-sm mt-2">
+                    Numéro #{user.jerseyNumber || "00"}
+                  </p>
+                </div>
+
+                {/* Preferred Position */}
+                <div className="text-center">
+                  <h4 className="text-lg font-nubernext-extended-bold text-white mb-4">
+                    Position Préférée
+                  </h4>
+                  <div className="flex justify-center">
+                    <BabyFootPosition 
+                      selectedPosition={user.position as keyof typeof POSITIONS || 'GOAL'}
+                      onPositionChange={undefined}
+                      className="scale-75"
+                    />
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
@@ -73,6 +74,10 @@ export default function RootLayout({
         className="antialiased"
         style={{backgroundColor: '#0C0E14', color: '#FDFFFF'}}
       >
+        <Script
+          src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"
+          strategy="beforeInteractive"
+        />
         <AuthProvider>
           {children}
         </AuthProvider>

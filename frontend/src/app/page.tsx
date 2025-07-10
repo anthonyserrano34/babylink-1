@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import AuthenticatedLayout, { useNavigation } from '@/components/layout/AuthenticatedLayout'
 import JouerPage from '@/components/pages/JouerPage'
 import ProfilPage from '@/components/pages/ProfilPage'
+import ClassementPage from '@/components/pages/ClassementPage'
 import { useState, useEffect } from 'react'
 
 /**
@@ -54,18 +55,7 @@ function MainContent() {
           </div>
         )
       case 'classement':
-        return (
-          <div className="h-full p-6 flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-3xl font-nubernext-extended-heavy text-white mb-4">
-                Classement
-              </h1>
-              <p className="text-[#AAAAAA] text-lg">
-                Page en cours de développement...
-              </p>
-            </div>
-          </div>
-        )
+        return <ClassementPage />
       case 'reserver':
         return (
           <div className="h-full p-6 flex items-center justify-center">

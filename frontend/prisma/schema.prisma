@@ -28,7 +28,7 @@ model User {
   skillLevel   String?
   position     String?
   championship String?
-  xp           Int?
-  coins        Int?
-  elo          Int?
+  xp           Int      @default(1250)  // Valeur par défaut 1250 XP
+  coins        Int      @default(0)     // Valeur par défaut 0 coins
+  elo          Int      @default(1000)  // Valeur par défaut 1000 ELO
 }

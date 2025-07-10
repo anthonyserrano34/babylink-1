@@ -165,16 +165,7 @@ export default function BabyFootPosition({
         </button>
       )}
       
-      <div className="shadow-none w-[281px] h-[289px] justify-self-center self-center grid-cols-auto min-h-[288px] rounded-[12px] text-white text-base leading-normal font-['IBM_Plex_Sans',-apple-system,BlinkMacSystemFont,'Segoe_UI',Helvetica,Arial,sans-serif,'Apple_Color_Emoji','Segoe_UI_Emoji'] transition-all duration-300">
-        <div className="select-none w-[279px] flex justify-center items-center outline-white outline-none outline-0 bg-transparent border-0 border-white p-3">
-          <div className="flex items-center">
-            <Icon1 className="mr-2 text-[rgb(94,97,112)]" />
-            <p className="font-medium leading-3 text-[rgb(145,148,163)] text-xs font-['IBM_Plex_Sans_Condensed',-apple-system,BlinkMacSystemFont,'Segoe_UI',Helvetica,Arial,sans-serif,'Apple_Color_Emoji','Segoe_UI_Emoji'] tracking-[0.2px] uppercase m-0 p-0">
-              Position préférée
-            </p>
-          </div>
-        </div>
-        
+            <div className="shadow-none w-[281px] h-[243px] justify-self-center self-center grid-cols-auto min-h-[243px] rounded-[12px] text-white text-base leading-normal font-['IBM_Plex_Sans',-apple-system,BlinkMacSystemFont,'Segoe_UI',Helvetica,Arial,sans-serif,'Apple_Color_Emoji','Segoe_UI_Emoji'] transition-all duration-300">
         <div className="h-[243px]">
           <div className="flex flex-col justify-between h-[243px]">
             <div className="flex justify-center p-3">

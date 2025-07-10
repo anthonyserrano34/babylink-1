@@ -48,6 +48,7 @@ interface AuthContextType {
   isLoading: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   register: (data: RegisterData) => Promise<{ success: boolean; error?: string }>
+  refreshProfile: () => Promise<{ success: boolean; error?: string }>
   logout: () => void
 }
 
@@ -157,6 +158,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   /**
+   * Reloads user profile from API - useful for updating avatar after login fix
+   */
+  const refreshProfile = async (): Promise<{ success: boolean; error?: string }> => {
+    try {
+      if (!user?.email) {
+        return { success: false, error: 'Aucun utilisateur connecté' }
+      }
+
+      const response = await fetch('/api/auth/refresh-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        return { success: false, error: data.error || 'Erreur de rechargement' }
+      }
+
+      setUser(data.user)
+      localStorage.setItem('user', JSON.stringify(data.user))
+      console.log('✅ Profile refreshed with avatar:', data.user.avatar)
+      
+      return { success: true }
+    } catch (error) {
+      console.error('Refresh profile failed:', error)
+      return { success: false, error: 'Erreur de connexion' }
+    }
+  }
+
+  /**
    * Logs out the current user and redirects to login
    */
   const logout = () => {
@@ -173,6 +206,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         login,
         register,
+        refreshProfile,
         logout,
       }}
     >

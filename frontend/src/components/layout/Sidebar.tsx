@@ -185,7 +185,7 @@ export default function Sidebar() {
             </div>
           </section>
 
-          {/* Stats Section - More space from EPSI Montpellier */}
+          {/* Stats Section - Uniquement COINS et ELO */}
           <section className="pb-6 pt-4">
             <div className="flex justify-center gap-10">
               <div className="flex flex-col items-center space-y-2">
@@ -198,25 +198,25 @@ export default function Sidebar() {
                 />
                 <div className="text-center">
                   <div className="text-white font-nubernext-extended-heavy text-lg">
-                    {user.coins || 850}
+                    {user.coins || 0}
                   </div>
-                  <div className="text-[#888888] text-xs">Coins</div>
+                  <div className="text-[#666666] text-xs uppercase tracking-wide">COINS</div>
                 </div>
               </div>
-              
+
               <div className="flex flex-col items-center space-y-2">
                 <Image 
                   src="/assets/trophy.png" 
-                  alt="ELO Rating" 
+                  alt="ELO" 
                   width={24}
                   height={24}
                   className="w-6 h-6"
                 />
                 <div className="text-center">
                   <div className="text-white font-nubernext-extended-heavy text-lg">
-                    {user.elo || 1340}
+                    {user.elo || 1000}
                   </div>
-                  <div className="text-[#888888] text-xs">ELO</div>
+                  <div className="text-[#666666] text-xs uppercase tracking-wide">ELO</div>
                 </div>
               </div>
             </div>

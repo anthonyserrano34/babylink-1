@@ -17,6 +17,9 @@ function hashPassword(password: string): string {
  */
 async function main() {
   // Clear existing data first
+  await prisma.gamePlayer.deleteMany()
+  await prisma.game.deleteMany()
+  await prisma.foosballTable.deleteMany()
   await prisma.user.deleteMany()
 
   const users = [
@@ -27,6 +30,7 @@ async function main() {
       score: 2450,
       firstName: 'Lionel',
       lastName: 'Messi',
+      avatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=messi10',
       skillLevel: 'EXPERT',
       position: 'Attaquant',
       championship: 'EPSI Montpellier',
@@ -42,6 +46,7 @@ async function main() {
       score: 1890,
       firstName: 'Cristiano',
       lastName: 'Ronaldo',
+      avatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=ronaldo7',
       skillLevel: 'EXPERT',
       position: 'Attaquant',
       championship: 'EPSI Montpellier',
@@ -57,6 +62,7 @@ async function main() {
       score: 1650,
       firstName: 'Neymar',
       lastName: 'Da Silva Santos Jr',
+      avatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=neymar11',
       skillLevel: 'AVANCE',
       position: 'Milieu',
       championship: 'EPSI Montpellier',
@@ -72,6 +78,7 @@ async function main() {
       score: 1200,
       firstName: 'Kylian',
       lastName: 'Mbappé',
+      avatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=mbappe9',
       skillLevel: 'INTERMEDIAIRE',
       position: 'Attaquant',
       championship: 'EPSI Montpellier',
@@ -93,6 +100,7 @@ async function main() {
         score: userData.score,
         firstName: userData.firstName,
         lastName: userData.lastName,
+        avatar: userData.avatar,
         skillLevel: userData.skillLevel,
         position: userData.position,
         championship: userData.championship,
@@ -106,9 +114,34 @@ async function main() {
     console.log(`✅ Utilisateur créé: ${user.name} (${user.email}) - Score: ${user.score}`)
   }
 
+  // Create foosball tables
+  const tables = [
+    {
+      name: 'Table Principale',
+      location: 'Salle principale - RDC',
+      isActive: true,
+      isAvailable: true,
+    },
+    {
+      name: 'Table 2',
+      location: 'Salle détente - 1er étage',
+      isActive: true,
+      isAvailable: false,
+    },
+  ]
+
+  for (const tableData of tables) {
+    const table = await prisma.foosballTable.create({
+      data: tableData,
+    })
+
+    console.log(`🏓 Table créée: ${table.name} (${table.location}) - Disponible: ${table.isAvailable ? 'Oui' : 'Non'}`)
+  }
+
   console.log('\n🎉 Base de données initialisée avec succès!')
   console.log('🔑 Mot de passe pour tous les utilisateurs de test: test123')
   console.log('📊 4 utilisateurs créés avec des profils complets')
+  console.log('🏓 2 tables de baby-foot créées')
 }
 
 main()

@@ -1,43 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
-import { createHash } from 'crypto'
 
 /**
- * Hashes passwords the same way we do everywhere else
- * @param {string} password - plain text password
- * @returns {string} - SHA256 hash
- */
-function hashPassword(password: string): string {
-  return createHash('sha256').update(password).digest('hex')
-}
-
-/**
- * Login endpoint - checks email/password and returns user data
- * @param {NextRequest} request - contains email and password in body
- * @returns {NextResponse} - user data or error message
+ * Refresh profile endpoint - reloads user data with updated avatar
+ * @param {NextRequest} request - contains userId
+ * @returns {NextResponse} - updated user data
  */
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json()
+    const { userId } = await request.json()
 
-    if (!email || !password) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'Email et mot de passe requis' },
+        { error: 'ID utilisateur requis' },
         { status: 400 }
       )
     }
 
-    const hashedPassword = hashPassword(password)
-
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { id: parseInt(userId) },
       select: {
         id: true,
         email: true,
         name: true,
         firstName: true,
         lastName: true,
-        password: true,
         score: true,
         avatar: true,
         elo: true,
@@ -48,17 +35,25 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    if (!user || user.password !== hashedPassword) {
+    if (!user) {
       return NextResponse.json(
-        { error: 'Email ou mot de passe incorrect' },
-        { status: 401 }
+        { error: 'Utilisateur introuvable' },
+        { status: 404 }
       )
     }
 
     // Générer un avatar automatique si l'utilisateur n'en a pas
     const avatar = user.avatar || `https://api.dicebear.com/9.x/big-smile/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=transparent`
     
-    const userWithoutPassword = {
+    // Mettre à jour l'avatar dans la base si il était vide
+    if (!user.avatar && avatar) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { avatar: avatar }
+      })
+    }
+    
+    const updatedUser = {
       id: user.id,
       email: user.email,
       name: user.name,
@@ -72,10 +67,10 @@ export async function POST(request: NextRequest) {
       position: user.position,
       championship: user.championship,
     }
-    
-    return NextResponse.json({ user: userWithoutPassword })
+
+    return NextResponse.json({ user: updatedUser })
   } catch (error) {
-    console.error('Erreur lors de la connexion:', error)
+    console.error('Erreur lors du refresh profile:', error)
     return NextResponse.json(
       { error: 'Erreur interne du serveur' },
       { status: 500 }
