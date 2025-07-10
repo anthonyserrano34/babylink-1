@@ -61,7 +61,7 @@ export async function GET(
             }
           },
           orderBy: {
-            joinedAt: 'asc'
+            id: 'asc'
           }
         }
       }
@@ -247,7 +247,7 @@ async function handleJoinGame(game: any, userId: number, guestName?: string, req
           }
         },
         orderBy: {
-          joinedAt: 'asc'
+          id: 'asc'
         }
       }
     }
@@ -321,7 +321,7 @@ async function handleStartGame(game: any, userId: number) {
           }
         },
         orderBy: {
-          joinedAt: 'asc'
+          id: 'asc'
         }
       }
     }
@@ -417,7 +417,7 @@ async function handleLeaveGame(game: any, userId: number) {
           }
         },
         orderBy: {
-          joinedAt: 'asc'
+          id: 'asc'
         }
       }
     }

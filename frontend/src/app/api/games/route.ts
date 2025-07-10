@@ -95,12 +95,10 @@ export async function POST(request: NextRequest) {
       hostId,
       tableId,
       gameMode,
-      winCondition,
-      winValue,
-      maxGoals
+      maxScore = 10
     } = await request.json()
 
-    if (!hostId || !tableId || !gameMode || !winCondition || !winValue) {
+    if (!hostId || !tableId || !gameMode) {
       return NextResponse.json(
         { error: 'Données de partie incomplètes' },
         { status: 400 }
@@ -169,9 +167,7 @@ export async function POST(request: NextRequest) {
         hostId,
         tableId,
         gameMode,
-        winCondition,
-        winValue,
-        maxGoals,
+        maxScore,
         status: 'waiting',
       },
       include: {

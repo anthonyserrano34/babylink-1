@@ -101,7 +101,7 @@ export default function GameLobby({ gameData, onLeaveGame, onStartGame }: GameLo
       try {
         // Connect to Socket.IO
         const socket = await socketService.connect()
-        socketService.joinUserSession(user.id, user.name)
+        socketService.joinUserSession(user.id, user)
         console.log('✅ Connected to Socket.IO for game lobby')
         setSocketConnected(true)
 
