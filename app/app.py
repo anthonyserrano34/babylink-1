@@ -8,6 +8,30 @@ import time
 import requests
 import json
 import sys
+import os
+
+# Configuration serveur Next.js via variables d'environnement
+def get_nextjs_api_url():
+    """
+    Get Next.js API base URL from environment or default
+    """
+    # Check for custom Next.js URL in environment
+    custom_url = os.getenv('NEXTJS_API_URL')
+    if custom_url:
+        # Ensure it ends with /api for consistency
+        if not custom_url.endswith('/api'):
+            custom_url = custom_url.rstrip('/') + '/api'
+        print(f"🔌 Using custom Next.js API URL: {custom_url}")
+        return custom_url
+    
+    # Default: auto-detect or localhost
+    # Try to get local network IP if available, otherwise localhost
+    default_url = "http://localhost:3000/api"
+    print(f"🔌 Using default Next.js API URL: {default_url}")
+    return default_url
+
+# Configuration pour communiquer avec l'API Next.js
+NEXTJS_API_BASE = get_nextjs_api_url()
 
 # Configuration Arduino
 ARDUINO_FAKE_MODE = '--fake' in sys.argv or '-fake' in sys.argv
@@ -85,9 +109,6 @@ score = {'GAUCHE': 0, 'DROITE': 0}
 # État global des parties en cours
 active_games = {}  # game_code -> game_data
 user_connections = {}  # socket_id -> user_info
-
-# Configuration pour communiquer avec l'API Next.js
-NEXTJS_API_BASE = 'http://localhost:3000/api'
 
 # User data storage for avatars and ELO - SYSTÈME REFAIT COMPLET
 user_data_cache = {}
@@ -205,8 +226,8 @@ def refresh_user_avatar(user_id, user_email, user_name=''):
 def get_user_from_nextjs_db(user_email):
     """Récupérer les données utilisateur depuis la base Next.js"""
     try:
-        # URL corrigée pour port 3000
-        api_url = 'http://localhost:3000/api/auth/get-user-by-email'
+        # URL corrigée pour utiliser la configuration
+        api_url = f'{NEXTJS_API_BASE}/auth/get-user-by-email'
         print(f"🌐 Appel API Next.js: {api_url}?email={user_email}")
         
         # Appel à l'API Next.js pour récupérer l'utilisateur par email
@@ -235,7 +256,7 @@ def get_user_from_nextjs_db(user_email):
 def update_user_avatar_in_nextjs_db(user_email, avatar_url):
     """Mettre à jour l'avatar d'un utilisateur dans la base Next.js"""
     try:
-        api_url = 'http://localhost:3000/api/auth/update-avatar'
+        api_url = f'{NEXTJS_API_BASE}/auth/update-avatar'
         print(f"🌐 Update avatar API: {api_url}")
         
         response = requests.post(api_url, 
@@ -259,7 +280,7 @@ def get_user_from_nextjs_db_by_id(user_id):
     """Récupérer les données utilisateur depuis la base Next.js par ID"""
     try:
         # URL pour récupérer par ID
-        api_url = 'http://localhost:3000/api/auth/get-user-by-id'
+        api_url = f'{NEXTJS_API_BASE}/auth/get-user-by-id'
         print(f"🌐 Appel API Next.js (par ID): {api_url}?id={user_id}")
         
         # Appel à l'API Next.js pour récupérer l'utilisateur par ID

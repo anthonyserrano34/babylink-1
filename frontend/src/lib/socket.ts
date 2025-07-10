@@ -10,6 +10,26 @@
 import { io, Socket } from 'socket.io-client'
 
 /**
+ * Get socket server URL from environment or default
+ */
+function getSocketUrl(): string {
+  // Check for custom socket URL in environment
+  if (typeof window !== 'undefined') {
+    const customUrl = process.env.NEXT_PUBLIC_SOCKET_URL
+    if (customUrl) {
+      console.log(`🔌 Using custom Socket.IO server URL: ${customUrl}`)
+      return customUrl
+    }
+  }
+  
+  // Default: auto-detect based on current hostname
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost'
+  const defaultUrl = `http://${hostname}:5000`
+  console.log(`🔌 Using default Socket.IO server URL: ${defaultUrl}`)
+  return defaultUrl
+}
+
+/**
  * Interface for game data from Socket.IO events
  */
 interface SocketGameData {
@@ -65,15 +85,14 @@ class SocketService {
 
   /**
    * Connect to the Flask Socket.IO server
-   * @param url - Socket.IO server URL (default: auto-detect based on hostname)
+   * @param url - Socket.IO server URL (optional override)
    */
   connect(url?: string): Promise<Socket> {
-    // Auto-detect server URL based on current hostname
+    // Use configuration if no URL provided
     if (!url) {
-      const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost'
-      url = `http://${hostname}:5000`
-      console.log(`🔌 Auto-detected Socket.IO server URL: ${url}`)
+      url = getSocketUrl()
     }
+    
     return new Promise((resolve, reject) => {
       if (this.socket && this.connected) {
         resolve(this.socket)
@@ -91,7 +110,7 @@ class SocketService {
       })
 
       this.socket.on('connect', () => {
-        console.log('✅ Connected to Flask Socket.IO server')
+        console.log(`✅ Connected to Flask Socket.IO server at ${url}`)
         this.connected = true
         this.reconnectAttempts = 0
         resolve(this.socket!)
@@ -345,4 +364,6 @@ class SocketService {
 // Export singleton instance
 export const socketService = new SocketService()
 export default socketService
+
+// Export types
 export type { SocketGameData, SocketEventHandlers } 
